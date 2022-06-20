@@ -34,6 +34,7 @@
   "require": {
     "php": "8.*",
     "ext-curl": "*",
+    "ext-json": "*",
     "composer/ca-bundle": "^1.2"
   },
   "require-dev": {
