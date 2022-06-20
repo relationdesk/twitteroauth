@@ -327,6 +327,28 @@ class TwitterOAuth extends Config
     }
 
     /**
+     * Set alt text for an image
+     *
+     * @param string $media_id
+     * @param string $alt_text
+     *
+     * @return array|object
+     */
+    public function mediaAltText(string $media_id, string $alt_text)
+    {
+        return $this->http(
+            'POST',
+            self::UPLOAD_HOST,
+            'media/metadata/create',
+            [
+                'media_id' => $media_id,
+                'alt_text' => ['text' => $alt_text],
+            ],
+            true
+        );
+    }
+
+    /**
      * Private method to upload media (not chunked) to upload.twitter.com.
      *
      * @param string $path
