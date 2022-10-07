@@ -329,23 +329,36 @@ class TwitterOAuth extends Config
     /**
      * Set alt text for an image
      *
-     * @param string $media_id
-     * @param string $alt_text
+     * @param string $mediaId
+     * @param string $altText
      *
      * @return array|object
      */
-    public function mediaAltText(string $media_id, string $alt_text)
+    public function mediaAltText(string $mediaId, string $altText)
     {
         return $this->http(
             'POST',
             self::UPLOAD_HOST,
             'media/metadata/create',
             [
-                'media_id' => $media_id,
-                'alt_text' => ['text' => $alt_text],
+                'media_id' => $mediaId,
+                'alt_text' => ['text' => $altText],
             ],
             true
         );
+    }
+
+    /**
+     * @param string $url
+     * @return array
+     * @throws TwitterOAuthException
+     */
+    public function getDmAttachmentData(string $url): array
+    {
+        return [
+            'content' => $this->oAuthRequest($url, 'GET', [], false),
+            'headers' => array_diff($this->response->getsHeaders(), $this->response->getXHeaders()),
+        ];
     }
 
     /**
