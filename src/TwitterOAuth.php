@@ -28,6 +28,7 @@ class TwitterOAuth extends Config
 {
     private const API_HOST = 'https://api.twitter.com';
     private const UPLOAD_HOST = 'https://upload.twitter.com';
+    private const ENGAGEMENT_HOST = 'https://data-api.twitter.com';
 
     /** @var Response details about the result of the last request */
     private ?Response $response = null;
@@ -359,6 +360,15 @@ class TwitterOAuth extends Config
             'content' => $this->oAuthRequest($url, 'GET', [], false),
             'headers' => array_diff($this->response->getsHeaders(), $this->response->getXHeaders()),
         ];
+    }
+
+    public function engagementRequest(string $path, array $parameters)
+    {
+        $this->resetLastResponse();
+        $this->resetAttemptsNumber();
+        $this->response->setApiPath($path);
+
+        return $this->makeRequests(self::ENGAGEMENT_HOST . $path, 'POST', $parameters, true);
     }
 
     /**
