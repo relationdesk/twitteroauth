@@ -390,6 +390,28 @@ class TwitterOAuth extends Config
     }
 
     /**
+     * @param string $mediaId
+     * @param array $subtitles
+     * @return void
+     */
+    public function mediaSubtitles(string $mediaId, array $subtitles)
+    {
+        $this->http(
+            'POST',
+            self::UPLOAD_HOST,
+            'media/subtitles/create',
+            [
+                'media_id' => $mediaId,
+                'media_category' => 'tweet_video',
+                'subtitle_info' => [
+                    'subtitles' => $subtitles
+                ],
+            ],
+            true
+        );
+    }
+
+    /**
      * Private method to upload media (not chunked) to upload.twitter.com.
      *
      * @param string $path
