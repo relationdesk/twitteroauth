@@ -363,7 +363,7 @@ class TwitterOAuth extends Config
                 'media_id' => $mediaId,
                 'alt_text' => ['text' => $altText],
             ],
-            true
+            ['jsonPayload' => false],
         );
     }
 
@@ -407,7 +407,7 @@ class TwitterOAuth extends Config
                     'subtitles' => $subtitles
                 ],
             ],
-            true
+            ['jsonPayload' => false],
         );
     }
 
