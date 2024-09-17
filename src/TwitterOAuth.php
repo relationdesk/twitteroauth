@@ -363,7 +363,7 @@ class TwitterOAuth extends Config
                 'media_id' => $mediaId,
                 'alt_text' => ['text' => $altText],
             ],
-            ['jsonPayload' => false],
+            ['jsonPayload' => true],
         );
     }
 
@@ -375,7 +375,7 @@ class TwitterOAuth extends Config
     public function getDmAttachmentData(string $url): array
     {
         return [
-            'content' => $this->oAuthRequest($url, 'GET', [], false),
+            'content' => $this->oAuthRequest($url, 'GET', [], ['jsonPayload' => false]),
             'headers' => array_diff($this->response->getsHeaders(), $this->response->getXHeaders()),
         ];
     }
@@ -386,7 +386,8 @@ class TwitterOAuth extends Config
         $this->resetAttemptsNumber();
         $this->response->setApiPath($path);
 
-        return $this->makeRequests(self::ENGAGEMENT_HOST . $path, 'POST', $parameters, true);
+        return $this->makeRequests(self::ENGAGEMENT_HOST . $path, 'POST', $parameters,
+            ['jsonPayload' => true]);
     }
 
     /**
@@ -407,7 +408,7 @@ class TwitterOAuth extends Config
                     'subtitles' => $subtitles
                 ],
             ],
-            ['jsonPayload' => false],
+            ['jsonPayload' => true],
         );
     }
 
