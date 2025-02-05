@@ -225,6 +225,26 @@ class TwitterOAuth extends Config
         return $response;
     }
 
+    public function oauth2V2(string $path, array $parameters = [])
+    {
+        $method = 'POST';
+        $this->resetLastResponse();
+        $this->response->setApiPath($path);
+        $url = sprintf('%s/2/%s', self::API_HOST, $path);
+        $authorization =
+            'Authorization: Basic ' .
+            $this->encodeAppAuthorization($this->consumer);
+        $result = $this->request(
+            $url,
+            $method,
+            $authorization,
+            $parameters
+        );
+        $response = JsonDecoder::decode($result, $this->decodeJsonAsArray);
+        $this->response->setBody($response);
+        return $response;
+    }
+
     /**
      * Make GET requests to the API.
      *
@@ -335,7 +355,7 @@ class TwitterOAuth extends Config
     {
         return $this->http(
             'GET',
-            self::UPLOAD_HOST,
+            self::API_HOST,
             'media/upload',
             [
                 'command' => 'STATUS',
@@ -431,7 +451,7 @@ class TwitterOAuth extends Config
             );
         }
         $parameters['media'] = base64_encode($file);
-        return $this->http('POST', self::UPLOAD_HOST, $path, $parameters, [
+        return $this->http('POST', self::API_HOST, $path, $parameters, [
             'jsonPayload' => false,
         ]);
     }
@@ -449,7 +469,7 @@ class TwitterOAuth extends Config
         /** @var object $init */
         $init = $this->http(
             'POST',
-            self::UPLOAD_HOST,
+            self::API_HOST,
             $path,
             $this->mediaInitParameters($parameters),
             ['jsonPayload' => false],
@@ -463,7 +483,7 @@ class TwitterOAuth extends Config
         while (!feof($media)) {
             $this->http(
                 'POST',
-                self::UPLOAD_HOST,
+                self::API_HOST,
                 'media/upload',
                 [
                     'command' => 'APPEND',
@@ -480,7 +500,7 @@ class TwitterOAuth extends Config
         // Finalize
         $finalize = $this->http(
             'POST',
-            self::UPLOAD_HOST,
+            self::API_HOST,
             'media/upload',
             [
                 'command' => 'FINALIZE',
