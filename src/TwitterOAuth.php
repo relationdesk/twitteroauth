@@ -474,8 +474,8 @@ class TwitterOAuth extends Config
             $this->mediaInitParameters($parameters),
             ['jsonPayload' => false],
         );
-        if (!property_exists($init, 'media_id_string')) {
-            throw new TwitterOAuthException('Missing "media_id_string"');
+        if (!property_exists($init, 'media_key')) {
+            throw new TwitterOAuthException('Missing "media_key"');
         }
         // Append
         $segmentIndex = 0;
@@ -487,9 +487,9 @@ class TwitterOAuth extends Config
                 'media/upload',
                 [
                     'command' => 'APPEND',
-                    'media_id' => $init->media_id_string,
+                    'media_id' => $init->media_key,
                     'segment_index' => $segmentIndex++,
-                    'media_data' => base64_encode(
+                    'media' => base64_encode(
                         fread($media, $this->chunkSize),
                     ),
                 ],
@@ -504,7 +504,7 @@ class TwitterOAuth extends Config
             'media/upload',
             [
                 'command' => 'FINALIZE',
-                'media_id' => $init->media_id_string,
+                'media_id' => $init->media_key,
             ],
             ['jsonPayload' => false],
         );
