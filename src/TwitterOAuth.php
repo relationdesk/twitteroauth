@@ -474,26 +474,26 @@ class TwitterOAuth extends Config
             $this->mediaInitParameters($parameters),
             ['jsonPayload' => false],
         );
-        if (empty($init->data?->media_key ?? null)) {
-            throw new TwitterOAuthException('Missing "media_key"');
+        if (empty($init->data?->id ?? null)) {
+            throw new TwitterOAuthException('Missing "media id"');
         }
         // Append
         $segmentIndex = 0;
         $media = fopen($parameters['media'], 'rb');
         while (!feof($media)) {
-            $this->http(
+            $chunk = fread($media, $this->chunkSize);
+//            file_put_contents('php://temp', $chunk);
+            $a = $this->http(
                 'POST',
                 self::API_HOST,
                 'media/upload',
                 [
                     'command' => 'APPEND',
-                    'media_id' => $init->data->media_key,
+                    'media_id' => $init->data->id,
                     'segment_index' => $segmentIndex++,
-                    'media' => base64_encode(
-                        fread($media, $this->chunkSize),
-                    ),
+                    'media' => new \CURLStringFile($chunk, 'chunk', 'application/octet-stream'),
                 ],
-                ['jsonPayload' => false],
+                ['jsonPayload' => false, 'multiPayload' => true],
             );
         }
         fclose($media);
@@ -504,7 +504,7 @@ class TwitterOAuth extends Config
             'media/upload',
             [
                 'command' => 'FINALIZE',
-                'media_id' => $init->data->media_key,
+                'media_id' => $init->data->id,
             ],
             ['jsonPayload' => false],
         );
@@ -834,7 +834,6 @@ class TwitterOAuth extends Config
             curl_close($curlHandle);
             throw new TwitterOAuthException($error, $errorNo);
         }
-
         $this->response->setHttpCode(
             curl_getinfo($curlHandle, CURLINFO_HTTP_CODE),
         );
@@ -914,6 +913,10 @@ class TwitterOAuth extends Config
                 $postfields,
                 JSON_THROW_ON_ERROR,
             );
+        } elseif ($options['multiPayload'] ?? false) {
+            $curlOptions[CURLOPT_HTTPHEADER][] =
+                'Content-type: multipart/form-data';
+            $curlOptions[CURLOPT_POSTFIELDS] = $postfields;
         } else {
             $curlOptions[CURLOPT_POSTFIELDS] = Util::buildHttpQuery(
                 $postfields,
