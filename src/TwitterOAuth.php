@@ -377,7 +377,7 @@ class TwitterOAuth extends Config
     {
         return $this->http(
             'POST',
-            self::UPLOAD_HOST,
+            self::API_HOST,
             'media/metadata/create',
             [
                 'media_id' => $mediaId,
@@ -419,7 +419,7 @@ class TwitterOAuth extends Config
     {
         $this->http(
             'POST',
-            self::UPLOAD_HOST,
+            self::API_HOST,
             'media/subtitles/create',
             [
                 'media_id' => $mediaId,
