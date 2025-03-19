@@ -423,7 +423,7 @@ class TwitterOAuth extends Config
             'media/subtitles',
             [
                 'media_id' => $mediaId,
-                'media_category' => 'tweet_video',
+                'media_category' => 'TweetVideo',
                 'subtitle_info' => [
                     'subtitles' => $subtitles
                 ],
