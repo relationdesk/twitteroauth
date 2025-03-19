@@ -380,13 +380,14 @@ class TwitterOAuth extends Config
             self::API_HOST,
             'media/metadata',
             [
-                'media_id' => $mediaId,
-                'alt_text' => ['text' => $altText],
+                'id' => $mediaId,
+                'metadata' => [
+                    'alt_text' => ['text' => $altText],
+                ]
             ],
             ['jsonPayload' => true],
         );
     }
-
     /**
      * @param string $url
      * @return array
@@ -422,11 +423,9 @@ class TwitterOAuth extends Config
             self::API_HOST,
             'media/subtitles',
             [
-                'media_id' => $mediaId,
+                'id' => $mediaId,
                 'media_category' => 'TweetVideo',
-                'subtitle_info' => [
-                    'subtitles' => $subtitles
-                ],
+                'subtitles' => $subtitles
             ],
             ['jsonPayload' => true],
         );
