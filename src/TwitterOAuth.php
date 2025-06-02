@@ -471,7 +471,7 @@ class TwitterOAuth extends Config
             self::API_HOST,
             'media/upload/initialize',
             $this->mediaInitParameters($parameters),
-            ['jsonPayload' => false],
+            ['jsonPayload' => true],
         );
         if (empty($init->data?->id ?? null)) {
             throw new TwitterOAuthException('Missing "media id"');
@@ -524,7 +524,6 @@ class TwitterOAuth extends Config
             'shared',
         ];
         $base = [
-            'command' => 'INIT',
             'total_bytes' => filesize($parameters['media']),
         ];
         $allowed_parameters = array_intersect_key(
