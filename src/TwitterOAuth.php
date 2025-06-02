@@ -469,7 +469,7 @@ class TwitterOAuth extends Config
         $init = $this->http(
             'POST',
             self::API_HOST,
-            $path,
+            'media/upload/initialize',
             $this->mediaInitParameters($parameters),
             ['jsonPayload' => false],
         );
@@ -483,8 +483,6 @@ class TwitterOAuth extends Config
         while (!feof($media)) {
             $chunk = fread($media, $chunkSize);
             $chunkParams = [
-                'command' => 'APPEND',
-                'media_id' => $init->data->id,
                 'segment_index' => $segmentIndex++,
             ];
             $chunkParams['media'] = !empty($this->bearer) ?
@@ -492,7 +490,7 @@ class TwitterOAuth extends Config
             $this->http(
                 'POST',
                 self::API_HOST,
-                'media/upload',
+                'media/upload/'.$init->data->id.'/append',
                 $chunkParams,
                 ['jsonPayload' => false, 'multiPayload' => true],
             );
@@ -502,11 +500,8 @@ class TwitterOAuth extends Config
         $finalize = $this->http(
             'POST',
             self::API_HOST,
-            'media/upload',
-            [
-                'command' => 'FINALIZE',
-                'media_id' => $init->data->id,
-            ],
+            'media/upload/'.$init->data->id.'/finalize',
+            [],
             ['jsonPayload' => false],
         );
         return $finalize;
