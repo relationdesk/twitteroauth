@@ -474,7 +474,8 @@ class TwitterOAuth extends Config
             ['jsonPayload' => true],
         );
         if (empty($init->data?->id ?? null)) {
-            throw new TwitterOAuthException('Missing "media id"');
+            $errorData = !empty($init) ? json_encode($init) : '';
+            throw new TwitterOAuthException('Missing "media id" '.$errorData);
         }
         // Append
         $segmentIndex = 0;
