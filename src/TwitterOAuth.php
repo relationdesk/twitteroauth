@@ -480,14 +480,12 @@ class TwitterOAuth extends Config
         // Append
         $segmentIndex = 0;
         $media = fopen($parameters['media'], 'rb');
-        $chunkSize = !empty($this->bearer) ? $this->chunkSize : 5000;
         while (!feof($media)) {
-            $chunk = fread($media, $chunkSize);
+            $chunk = fread($media, $this->chunkSize);
             $chunkParams = [
                 'segment_index' => $segmentIndex++,
             ];
-            $chunkParams['media'] = !empty($this->bearer) ?
-                new \CURLStringFile($chunk, 'chunk', 'application/octet-stream') : base64_encode($chunk);
+            $chunkParams['media'] = new \CURLStringFile($chunk, 'chunk', 'application/octet-stream');
             $this->http(
                 'POST',
                 self::API_HOST,
@@ -910,17 +908,9 @@ class TwitterOAuth extends Config
                 JSON_THROW_ON_ERROR,
             );
         } elseif ($options['multiPayload'] ?? false) {
-            if(!empty($this->bearer)) {
-                $curlOptions[CURLOPT_HTTPHEADER][] =
-                    'Content-type: multipart/form-data';
-                $curlOptions[CURLOPT_POSTFIELDS] = $postfields;
-            } else {
-                $curlOptions[CURLOPT_HTTPHEADER][] =
-                    'Content-Type: application/x-www-form-urlencoded';
-                $curlOptions[CURLOPT_POSTFIELDS] = Util::buildHttpQuery(
-                    $postfields,
-                );
-            }
+            $curlOptions[CURLOPT_HTTPHEADER][] =
+                'Content-type: multipart/form-data';
+            $curlOptions[CURLOPT_POSTFIELDS] = $postfields;
         } else {
             $curlOptions[CURLOPT_POSTFIELDS] = Util::buildHttpQuery(
                 $postfields,
