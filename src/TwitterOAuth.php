@@ -480,21 +480,24 @@ class TwitterOAuth extends Config
         // Append
         $segmentIndex = 0;
         $media = fopen($parameters['media'], 'rb');
-        $chunkSize = !empty($this->bearer) ? $this->chunkSize : 5000;
         while (!feof($media)) {
-            $chunk = fread($media, $chunkSize);
+            $chunk = fread($media, $this->chunkSize);
             $chunkParams = [
                 'segment_index' => $segmentIndex++,
             ];
             $chunkParams['media'] = !empty($this->bearer) ?
                 new \CURLStringFile($chunk, 'chunk', 'application/octet-stream') : base64_encode($chunk);
-            $this->http(
+            $options = !empty($this->bearer) ? ['jsonPayload' => false, 'multiPayload' => true] : ['jsonPayload' => true, 'multiPayload' => false];
+            $resp = $this->http(
                 'POST',
                 self::API_HOST,
                 'media/upload/'.$init->data->id.'/append',
                 $chunkParams,
-                ['jsonPayload' => false, 'multiPayload' => true],
+                $options,
             );
+            if(property_exists($resp, 'errors') && !empty($resp->errors)) {
+                throw new TwitterOAuthException('Invalid chunk upload response '.json_encode($resp));
+            }
         }
         fclose($media);
         // Finalize
